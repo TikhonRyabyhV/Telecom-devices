@@ -25,7 +25,7 @@ always @(posedge clk or posedge clr) begin
     else begin
         Q <=  L ? di :
              ( up & ce) ? Q + 1 :
-             (!up & ce) ? Q - 1 : Q;
+             (~up & ce) ? Q - 1 : Q;
     end
 end
 

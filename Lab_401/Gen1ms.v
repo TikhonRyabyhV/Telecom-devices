@@ -2,7 +2,7 @@ module Gen1ms
 (
     input  wire clk  ,
 
-    output wire ce1ms = 0
+    output wire ce1ms
 );
 
 parameter Fclk  = 50000000;

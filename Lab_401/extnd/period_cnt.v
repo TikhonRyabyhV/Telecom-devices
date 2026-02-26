@@ -19,8 +19,8 @@ always @(posedge clk) begin
     end
 
     else begin
-           cb10R1 <= ce1ms ? (~CEO ? cb10R1 + 1 : 10'b1    ) :    cb10R1;
-        bf_cb10R1 <= ce1ms ? ( CEO ? cb10R1     : bf_cb10R1) : bf_cb10R1;
+           cb10R1 <= CEO ? 10'b1 : ce1ms ? cb10R1 + 1 : cb10R1;
+        bf_cb10R1 <= CEO ? cb10R1: bf_cb10R1;
     end
 
 end
