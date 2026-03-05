@@ -1,0 +1,19 @@
+module Gen4an
+(
+    input wire clk,
+    input wire ce ,
+
+    output reg  [1:0] q ,
+    output wire [3:0] an
+);
+
+always @(posedge clk) begin
+    q <= ce ? q + 1 : q;
+end
+
+assign an = q == 2'b00 ? 4'b1110 :
+            q == 2'b01 ? 4'b1101 :
+            q == 2'b10 ? 4'b1011 :
+                         4'b0111 ;
+
+endmodule
