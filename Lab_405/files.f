@@ -1,0 +1,12 @@
+l405_tsb.v
+lab_405_top.v
+./TX_and_RX/AR_TXD.v
+./TX_and_RX/AR_RXD.v
+./MEM_and_GEN/Gen_Nms_1s.v
+./MEM_and_GEN/REG_BL.v
+./display/DISPLAY.v
+./display/D7seg.v
+./display/Gen_P.v
+./display/Gen1ms.v
+./display/Gen4an.v
+./display/MUX16_4.v

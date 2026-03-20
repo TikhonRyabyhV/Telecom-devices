@@ -27,6 +27,10 @@ module AR_RXD
     output  reg [ 7:0]  sr_adr,
     output  reg [22:0]  sr_dat,
 
+    // Buffers for received address and data
+    output  reg [ 7:0]  RX_adr,
+    output  reg [22:0]  RX_dat,
+
     // Successful transmission
     output  wire    ce_wr
 );
@@ -39,10 +43,8 @@ reg tRXD1;
 reg [11:0]  cb_T_bit;
 reg [11:0]     T_bit;
 
-wire    ok_rx;
-
-reg [ 7:0]  RX_adr;
-reg [22:0]  RX_dat;
+wire      ok_rx;
+reg     t_ok_rx;
 
 // Forming RXCLK
 assign
@@ -62,9 +64,9 @@ always @(posedge clk) begin
            T_bit <= 12'b0;
     end
     else begin
-        cb_T_bit <= tRXCLK & (~RXCLK) | (cb_T_bit == T_bit)       ? 12'b1    : cb_T_bit + 1;
-           T_bit <= (cb_bit ==  3)    & (cb_T_bit == T_bit) & res ? 12'b0    :
-                    tRXCLK & (~RXCLK)                             ? cb_T_bit :    T_bit    ;
+        cb_T_bit <= (tRXCLK & (~RXCLK)) | (cb_T_bit == T_bit) | (cb_T_bit == {12{1'b1}}) ? 12'b1 : cb_T_bit + 1;
+           T_bit <= (cb_bit ==  3)      & (cb_T_bit == T_bit) &  res ? 12'b0    :
+                    tRXCLK & (~RXCLK)                                ? cb_T_bit : T_bit;
     end
 end
 
@@ -97,6 +99,14 @@ end
 
 assign
     ok_rx = T_cp & RXCLK & (FT_cp == ((~RXD0) | RXD1));
+
+
+always @(posedge clk) begin
+    if(clr)
+        t_ok_rx <= 1'b0;
+    else
+        t_ok_rx <= ok_rx;
+end
 
 // Forming pause signal
 always @(posedge clk) begin
@@ -136,5 +146,9 @@ always @(posedge clk) begin
         RX_dat <= ok_rx ? sr_dat : RX_dat;
     end
 end
+
+// Enable writing in memory
+assign
+    ce_wr = (~ok_rx) & t_ok_rx;
 
 endmodule
