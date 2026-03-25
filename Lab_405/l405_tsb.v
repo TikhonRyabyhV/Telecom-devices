@@ -39,7 +39,7 @@ initial begin
     clr = 1; #5 clr = 0;
     SW[3:0] = 4'b00;
     SW[  4] = 1'b1 ;
-    SW[6:5] = 2'b00;
+    SW[6:5] = 2'b10;
     #1000000;
 
     $finish;

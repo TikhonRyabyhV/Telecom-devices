@@ -60,11 +60,12 @@ end
 
 always @(posedge clk) begin
     if(clr) begin
-        cb_T_bit <= 12'b1;
+        cb_T_bit <= 12'b0;
            T_bit <= 12'b0;
     end
     else begin
-        cb_T_bit <= (tRXCLK & (~RXCLK)) | (cb_T_bit == T_bit) | (cb_T_bit == {12{1'b1}}) ? 12'b1 : cb_T_bit + 1;
+        cb_T_bit <=  en_rx                                                               ? 12'b0 :
+                    (tRXCLK & (~RXCLK)) | (cb_T_bit == T_bit) | (cb_T_bit == {12{1'b1}}) ? 12'b1 : cb_T_bit + 1;
            T_bit <= (cb_bit ==  3)      & (cb_T_bit == T_bit) &  res ? 12'b0    :
                     tRXCLK & (~RXCLK)                                ? cb_T_bit : T_bit;
     end
@@ -75,8 +76,8 @@ always @(posedge clk) begin
     if(clr)
         cb_bit <= 4'b0;
     else
-        cb_bit <= res & (cb_bit == 3) & (cb_T_bit == T_bit) ? 4'b0       :
-                  ((~RXCLK) & tRXCLK) | (cb_T_bit == T_bit) ? cb_bit + 1 : cb_bit;
+        cb_bit <= res & (cb_bit == 3) & (T_bit != 0) & (cb_T_bit == T_bit) ? 4'b0       :
+                  ((~RXCLK) & tRXCLK) | (T_bit != 0) & (cb_T_bit == T_bit) ? cb_bit + 1 : cb_bit;
 end
 
 // Checking correctness of transmission
@@ -113,8 +114,8 @@ always @(posedge clk) begin
     if(clr)
         res <= 1'b0;
     else
-        res <= (cb_bit == 31) & (cb_T_bit == T_bit)       ? 1'b1 :
-               (cb_bit ==  3) & (cb_T_bit == T_bit) & res ? 1'b0 : res;
+        res <= (cb_bit == 31) &  tRXCLK & (~RXCLK)                       ? 1'b1 :
+               (cb_bit ==  3) & (T_bit != 0) & (cb_T_bit == T_bit) & res ? 1'b0 : res;
 end
 
 // Enable receiving
